@@ -87,7 +87,7 @@ dados_api %>%
     fill = "Cor ou raça",
     caption = "Fonte: IBGE - SIDRA (10333) | Elaboração: Amanda Ravelly"
   ) +
-  theme_bw(base_family = "Ubuntu") +
+  theme_(base_family = "Ubuntu") +
   theme(
     plot.title = element_text(face = "bold", size = 16),
     plot.subtitle = element_text(size = 12),
@@ -95,12 +95,67 @@ dados_api %>%
     legend.position = "right"
   )
 
+# 5. Mapa por Unidade da Federação
+# -------------------------------------
+# Carregando shapefile dos estados
+estados <- read_state(showProgress = TRUE)
 
+estados = estados %>% 
+  mutate(name_state = str_to_upper(name_state))
 
+dados_api = dados_api %>% 
+  mutate(uf = str_to_upper(uf))
 
+dados_api$uf[dados_api$uf == "ESPÍRITO SANTO"] = "ESPIRITO SANTO"
 
+# Unindo dados do IBGE com os polígonos
+mapa_uf_sf <-  estados %>% 
+  left_join(dados_api %>% 
+              filter(uf != "BRASIL",
+                     raca_cor == "Total"),
+            by = c("name_state"="uf"))
 
+# Fonte Ubuntu para manter padrão visual
+font_add_google("Ubuntu", "Ubuntu")
+showtext_auto()
 
+ggplot(mapa_uf_sf) +
+  geom_sf(aes(fill = valor), color = "white", size = 0.2) +
+  facet_wrap(
+    ~ tempo,
+    ncol = 4,
+    labeller = label_wrap_gen(width = 18)  # <<< quebra o texto dos títulos
+  ) +
+  scale_fill_viridis_c(option = "C", name = "% da pop.") +
+  labs(
+    title = "Tempo de deslocamento até o trabalho",
+    subtitle = "Percentual por Unidade da Federação",
+    caption = "Fonte: IBGE - SIDRA (Tabela 10333) | Elaboração: Amanda Ravelly"
+  ) +
+  theme_bw(base_family = "Ubuntu") +
+  theme(
+    panel.background = element_rect(fill = "#f9f7f4", color = NA),
+    legend.position = "right",
+    legend.title = element_text(face = "bold"),
+    legend.text = element_text(size = 8),
+    plot.title = element_text(face = "bold", size = 22),
+    plot.subtitle = element_text(size = 16, color = "gray30"),
+    plot.caption = element_text(size = 9, color = "gray40"),
+    panel.grid.minor = element_blank(),
+    plot.background = element_rect(fill="#f6eee3"),
+    panel.grid.major.y = element_blank(),
+    plot.margin = margin(t = 20, r = 20, b = 20, l = 20),
+    
+    # Remove coordenadas
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title = element_blank(),
+    panel.grid = element_blank(),
+    
+    # Aparência dos títulos dos facetes
+    strip.background = element_rect(fill = "#f0ece4", color = NA),
+    strip.text = element_text(size = 9, color = "black")
+  )
 
 
 
