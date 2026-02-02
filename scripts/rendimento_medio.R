@@ -23,9 +23,9 @@ rendimentos <- get_sidra(api = "/t/6390/n1/all/v/5933/p/all") %>%
 ultimo_valor <- round(tail(rendimentos$Valor, 1), 1)
 ultima_data <- tail(rendimentos$date, 1)
 
-# -------------------------------------
+
 # Gráfico de evolução do rendimento médio
-# -------------------------------------
+
 
 ggplot(rendimentos, aes(x = date, y = Valor)) +
   
@@ -113,6 +113,7 @@ ggplot(rendimentos, aes(x = date, y = Valor)) +
     x = "",
     y = "R$ (reais de 2025)",
     title = "Rendimento médio mensal real habitualmente recebido",
-    subtitle = "Brasil, março/2012 – junho/2025",
-    caption = "Elaboração: Fábio Rocha | Dados: PNAD Contínua - IBGE / SIDRA 6390"
+    subtitle = "Brasil, março/2012 – junho/2026",
+    caption = "Elaboração: Amanda Ravelly | Dados: PNAD Contínua - IBGE / SIDRA 6390"
   )
+
